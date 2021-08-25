@@ -14,3 +14,8 @@ diesel setup
 diesel migration generate create_post_table
 diesel migration run
 ```
+
+#### Reference
+```
+https://www.perimeterx.com/tech-blog/2021/building-a-website-using-rust-rocket-diesel-and-askama/
+```

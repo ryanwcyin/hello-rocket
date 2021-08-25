@@ -1,16 +1,23 @@
+use std::path::PathBuf;
+use rocket::fs::NamedFile;
 use rocket::{get, launch, routes};
+use rocket::response::status::NotFound;
+
 
 #[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
+async fn index() -> Result<NamedFile, NotFound<String>> {
+    NamedFile::open("site/static/index.html")
+        .await
+        .map_err(|e| NotFound(e.to_string()))
 }
 
-#[get("/<name>")]
-fn get_name(name: String) -> String {
-    format!("Hello {}", name)
+#[get("/<path..>")]
+async fn static_files(path: PathBuf) -> Result<NamedFile, NotFound<String>> {
+    let path = PathBuf::from("site").join(path);
+    NamedFile::open(path).await.map_err(|e| NotFound(e.to_string()))
 }
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, get_name])
+    rocket::build().mount("/", routes![index, static_files])
 }
